@@ -28,8 +28,5 @@
   "directories": {
     "test": "tests"
   },
-  "description": "",
-  "dependencies": {
-    "@supabase/supabase-js": "^2.38.1"
-  }
+  "description": ""
 }

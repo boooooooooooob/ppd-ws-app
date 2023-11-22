@@ -10,20 +10,3 @@ export function getField<T extends JSON.Value>(
 ): T | null {
   return data.get(field) as T
 }
-
-export function getIntegerOrNum(
-  data: JSON.Obj,
-  key: string
-): JSON.Integer | JSON.Num | null {
-  let jsonValue = data.get(key)
-  if (jsonValue != null) {
-    if (jsonValue.isInteger) {
-      JSON.Float.toString()
-      return <JSON.Integer>jsonValue
-    }
-    if (jsonValue.isNum) {
-      return <JSON.Num>jsonValue
-    }
-  }
-  return null
-}

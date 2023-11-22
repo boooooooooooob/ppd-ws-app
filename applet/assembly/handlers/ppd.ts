@@ -9,7 +9,7 @@ import {
 
 import { String, Int64, Float64 } from '@w3bstream/wasm-sdk/assembly/sql'
 
-export function submit(rid: i32): i32 {
+export function charge(rid: i32): i32 {
   const deviceMessage = GetDataByRID(rid)
   Log('device message: ' + deviceMessage)
 
@@ -22,7 +22,7 @@ export function submit(rid: i32): i32 {
     return 0
   }
 
-  let voltage = payload.getString('voltage')
+  const voltage = payload.getString('voltage')
   const current = payload.getString('current')
   const power = payload.getString('power')
   const datetime = payload.getInteger('datetime')
@@ -93,7 +93,45 @@ export function submit(rid: i32): i32 {
     new Float64(parseFloat(amount.valueOf())),
   ])
 
-  // SubmitMetrics
+  return 0
+}
+
+export function locate(rid: i32): i32 {
+  const deviceMessage = GetDataByRID(rid)
+  Log('device message: ' + deviceMessage)
+
+  const payload = JSON.parse(deviceMessage) as JSON.Obj
+
+  const publisherName = payload.getString('publisherName')
+
+  if (publisherName == null) {
+    Log('resourceID: ' + rid.toString() + ' missing publisherName')
+    return 0
+  }
+
+  const lat = payload.getInteger('lat')
+  const long = payload.getString('long')
+  const alt = payload.getString('alt')
+  const accuracy = payload.getString('accuracy')
+
+  if (lat == null) {
+    Log('resourceID: ' + rid.toString() + ' missing voltage')
+    return 0
+  }
+  if (long == null) {
+    Log('resourceID: ' + rid.toString() + ' missing current')
+    return 0
+  }
+  if (alt == null) {
+    Log('resourceID: ' + rid.toString() + ' missing power')
+    return 0
+  }
+  if (accuracy == null) {
+    Log('resourceID: ' + rid.toString() + ' missing datetime')
+    return 0
+  }
+
+  // TODO: save data to database and SubmitMetrics
   // const result = QuerySQL(
   //   `SELECT id, publisher_name, total_amount, remaining_amount, consumed_amount, created_at FROM "t_charge_statistics" WHERE publisher_name = ?;`,
   //   [new String(publisherName.toString())]

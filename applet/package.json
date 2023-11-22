@@ -16,7 +16,7 @@
     "@w3bstream/wasm-sdk": "^0.10.0",
     "as-big": "^0.2.2",
     "as-bignum": "^0.2.40",
-    "assemblyscript": "^0.26.0"
+    "assemblyscript": "^0.27.21"
   },
   "type": "module",
   "exports": {

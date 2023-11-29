@@ -31,6 +31,7 @@ export function charge(rid: i32): i32 {
   const amount = payload.getString('amount')
   const totalAmount = payload.getString('totalAmount')
   const totolSecs = payload.getInteger('totolSecs')
+  const times = payload.getInteger('times')
 
   if (voltage == null) {
     Log('resourceID: ' + rid.toString() + ' missing voltage')
@@ -66,6 +67,10 @@ export function charge(rid: i32): i32 {
   }
   if (totolSecs == null) {
     Log('resourceID: ' + rid.toString() + ' missing totolSecs')
+    return 0
+  }
+  if (times == null) {
+    Log('resourceID: ' + rid.toString() + ' missing times')
     return 0
   }
 

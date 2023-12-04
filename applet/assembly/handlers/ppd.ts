@@ -74,8 +74,8 @@ export function charge(rid: i32): i32 {
     return 0
   }
 
-  const sql = `INSERT INTO "t_charge_info" (rid,publisher_name,voltage,current,power,datetime,start_meter,end_meter,amount,total_amount,totol_secs) VALUES (?,?,?,?,?,?,?,?,?,?,?);`
-  ExecSQL(sql, [
+  const sql_charge = `INSERT INTO "t_charge_info" (rid,publisher_name,voltage,current,power,datetime,start_meter,end_meter,amount,total_amount,totol_secs, times) VALUES (?,?,?,?,?,?,?,?,?,?,?,?);`
+  ExecSQL(sql_charge, [
     new Int64(rid),
     new String(publisherName.toString()),
     new Float64(parseFloat(voltage.valueOf())),
@@ -87,15 +87,28 @@ export function charge(rid: i32): i32 {
     new Float64(parseFloat(amount.valueOf())),
     new Float64(parseFloat(totalAmount.valueOf())),
     new Int64(totolSecs.valueOf()),
+    new Int64(times.valueOf()),
   ])
 
-  const sql2 = `INSERT INTO "t_charge_statistics" (publisher_name,total_amount,remaining_amount) VALUES (?,?,?) ON CONFLICT(publisher_name) DO UPDATE SET total_amount = "t_charge_statistics".total_amount + ?, remaining_amount = "t_charge_statistics".remaining_amount + ?;`
-  ExecSQL(sql2, [
+  const sql_charge_session = `INSERT INTO "t_charge_session_statistics" (publisher_name,session_id,total_amount,totol_secs,updated_at) 
+    VALUES (?,?,?,?,?,?,?) ON CONFLICT(publisher_name,session_id) DO UPDATE SET total_amount="t_charge_session_statistics".total_amount + ?,totol_secs="t_charge_session_statistics".totol_secs + ?,d.total_amount=?,d.totol_secs=?,updated_at=?;`
+  ExecSQL(sql_charge_session, [
+    new String(publisherName.toString()),
+    new Int64(times.valueOf()),
+    new Float64(parseFloat(totalAmount.valueOf())),
+    new Int64(totolSecs.valueOf()),
+    new Int64(Math.floor(Date.now() / 1000)),
+  ])
+
+  const sql_charge_stat = `INSERT INTO "t_charge_statistics" (publisher_name,total_amount,totol_secs,remaining_amount,updated_at) 
+    VALUES (?,?,?,?,?,?) ON CONFLICT(publisher_name) DO UPDATE SET total_amount="t_charge_statistics".total_amount + ?, totol_secs="t_charge_statistics".totol_secs + ?, remaining_amount="t_charge_statistics".remaining_amount + ?,updated_at=?;`
+  ExecSQL(sql_charge_stat, [
     new String(publisherName.toString()),
     new Float64(parseFloat(amount.valueOf())),
     new Float64(parseFloat(amount.valueOf())),
     new Float64(parseFloat(amount.valueOf())),
     new Float64(parseFloat(amount.valueOf())),
+    new Int64(Math.floor(Date.now() / 1000)),
   ])
 
   return 0
@@ -117,7 +130,6 @@ export function locate(rid: i32): i32 {
   const lat = payload.getInteger('lat')
   const long = payload.getString('long')
   const alt = payload.getString('alt')
-  const accuracy = payload.getString('accuracy')
 
   if (lat == null) {
     Log('resourceID: ' + rid.toString() + ' missing voltage')
@@ -129,10 +141,6 @@ export function locate(rid: i32): i32 {
   }
   if (alt == null) {
     Log('resourceID: ' + rid.toString() + ' missing power')
-    return 0
-  }
-  if (accuracy == null) {
-    Log('resourceID: ' + rid.toString() + ' missing datetime')
     return 0
   }
 

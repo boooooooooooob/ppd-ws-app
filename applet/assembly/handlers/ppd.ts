@@ -30,7 +30,7 @@ export function charge(rid: i32): i32 {
   const endMeter = payload.getString('endMeter')
   const amount = payload.getString('amount')
   const totalAmount = payload.getString('totalAmount')
-  const totolSecs = payload.getInteger('totolSecs')
+  const totalSecs = payload.getInteger('totalSecs')
   const times = payload.getInteger('times')
 
   if (voltage == null) {
@@ -65,8 +65,8 @@ export function charge(rid: i32): i32 {
     Log('resourceID: ' + rid.toString() + ' missing totalAmount')
     return 1
   }
-  if (totolSecs == null) {
-    Log('resourceID: ' + rid.toString() + ' missing totolSecs')
+  if (totalSecs == null) {
+    Log('resourceID: ' + rid.toString() + ' missing totalSecs')
     return 1
   }
   if (times == null) {
@@ -86,7 +86,7 @@ export function charge(rid: i32): i32 {
     new Float64(parseFloat(endMeter.valueOf())),
     new Float64(parseFloat(amount.valueOf())),
     new Float64(parseFloat(totalAmount.valueOf())),
-    new Int64(totolSecs.valueOf()),
+    new Int64(totalSecs.valueOf()),
     new Int64(times.valueOf()),
   ])
 
@@ -99,9 +99,9 @@ export function charge(rid: i32): i32 {
     new String(publisherName.toString()),
     new Int64(times.valueOf()),
     new Float64(parseFloat(totalAmount.valueOf())),
-    new Int64(totolSecs.valueOf()),
+    new Int64(totalSecs.valueOf()),
     new Float64(parseFloat(totalAmount.valueOf())),
-    new Int64(totolSecs.valueOf()),
+    new Int64(totalSecs.valueOf()),
   ])
 
   const sql_charge_stat = `INSERT INTO "t_charge_statistics" (publisher_name,total_amount,totol_secs,remaining_amount)
@@ -109,10 +109,10 @@ export function charge(rid: i32): i32 {
   ExecSQL(sql_charge_stat, [
     new String(publisherName.toString()),
     new Float64(parseFloat(amount.valueOf())),
-    new Int64(totolSecs.valueOf()),
+    new Int64(totalSecs.valueOf()),
     new Float64(parseFloat(amount.valueOf())),
     new Float64(parseFloat(amount.valueOf())),
-    new Int64(totolSecs.valueOf()),
+    new Int64(totalSecs.valueOf()),
     new Float64(parseFloat(amount.valueOf())),
     // new Time(isoString),
   ])

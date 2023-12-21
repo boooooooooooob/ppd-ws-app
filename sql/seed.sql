@@ -6,7 +6,7 @@ CREATE TABLE t_charge_info (
     voltage NUMERIC not null,
     current NUMERIC not null,
     power NUMERIC not null,
-    datetime int64 not null,
+    datetime NUMERIC not null,
     start_meter NUMERIC not null,
     end_meter NUMERIC not null,
     amount NUMERIC not null,

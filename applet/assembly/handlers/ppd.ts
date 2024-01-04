@@ -120,7 +120,8 @@ export function charge(rid: i32): i32 {
         total_secs = CASE 
             WHEN "t_charge_session_statistics".total_secs < ? THEN ? 
             ELSE "t_charge_session_statistics".total_secs 
-        END;
+        END,
+        updated_at = now();
   `
   ExecSQL(sql_charge_session, [
     new String(publisherName.toString()),

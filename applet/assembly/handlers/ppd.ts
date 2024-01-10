@@ -163,22 +163,39 @@ export function locate(rid: i32): i32 {
     return 0
   }
 
-  const lat = payload.getInteger('lat')
+  const lat = payload.getString('lat')
   const long = payload.getString('long')
   const alt = payload.getString('alt')
 
   if (lat == null) {
-    Log('resourceID: ' + rid.toString() + ' missing voltage')
+    Log('resourceID: ' + rid.toString() + ' missing lat')
     return 0
   }
   if (long == null) {
-    Log('resourceID: ' + rid.toString() + ' missing current')
+    Log('resourceID: ' + rid.toString() + ' missing long')
     return 0
   }
   if (alt == null) {
-    Log('resourceID: ' + rid.toString() + ' missing power')
+    Log('resourceID: ' + rid.toString() + ' missing alt')
     return 0
   }
+
+  const sql_charge_session = `
+    INSERT INTO "t_locate_info" (publisher_name, long, lat, alt)
+    VALUES (?, ?, ?, ?)
+    ON CONFLICT (publisher_name)
+    DO UPDATE SET
+        long=?, lat=?, alt=?, updated_at = now();
+  `
+  ExecSQL(sql_charge_session, [
+    new String(publisherName.toString()),
+    new String(long.toString()),
+    new String(lat.toString()),
+    new String(alt.toString()),
+    new String(long.toString()),
+    new String(lat.toString()),
+    new String(alt.toString()),
+  ])
 
   // TODO: save data to database and SubmitMetrics
   // const result = QuerySQL(
